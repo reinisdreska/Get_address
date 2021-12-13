@@ -1,0 +1,15 @@
+.center {
+    text-align:center;
+}
+
+textarea {
+    width: 50%;
+    height: 380px;
+}
+
+.center button {
+    margin-right: 25%;
+    float: right;
+    width: 13.7%;
+    height: 40px;
+}
