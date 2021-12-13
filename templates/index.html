@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <textarea id="input" placeholder="Input coordinates"></textarea>
+    <button id="button">Parse</button>
+    <!-- <div id="data_table"></div> -->
+    <script>
+        $("button").click(function(){
+            var data = $("#input").val();
+            $.post("/", {raw_data:data}, function(flask_data) {
+                alert(flask_data)
+                // $("#data_table").html(flask_data)
+            });
+        });
+    </script>
+</body>
+</html>
