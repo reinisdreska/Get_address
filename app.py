@@ -1,12 +1,11 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS, cross_origin
-from geopy import Nominatim
+import config
+import requests
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-
-geolocator = Nominatim(user_agent='MyGeoLocator')
 
 @app.route("/", methods=['GET', 'POST'])
 @cross_origin()
@@ -17,22 +16,9 @@ def index():
         location_data = []
         for i in raw_data_array:
             latlon = i.split(", ")
-            geo_data = geolocator.reverse(i)
-            print(i)
-            print(geo_data.raw)
-            address_info = geo_data.address.split(",")
-            location_info = {
-                "valsts":address_info[6],
-                "admin_vien":address_info[4],
-                "terit_vien":address_info[2],
-                "apdz_vieta":address_info[3],
-                "iela":address_info[1],
-                "māja":address_info[0],
-                "index":address_info[5],
-                "adrese":address_info[1] + " " + address_info[0] + ", " + address_info[2] + ", " + address_info[3] + ", " + address_info[4] + ", " + address_info[6],
-                "lat": latlon[0],
-                "lon": latlon[1]
-            }
+            url = "https://"+ config.url +"/v3/"+ config.api +"/reverse_geocoding?lat="+ latlon[0] +"&lon="+ latlon[1]
+            responce = requests.get(url)
+            location_info = responce.json()
             location_data.append(location_info)
         location_data_string = str(location_data)
         return location_data_string
