@@ -8,13 +8,16 @@
 <body>
     <div class="center">
         <textarea id="input" placeholder="Input coordinates"></textarea><br>
-        <button id="button">Parse</button><br><br>
+        <button id="button">Parse</button><br><br><br>
         <div id="data_table"></div>
     </div>
     <script>
         $("button").click(function(){
             var data = $("#input").val();
             $.post("http://127.0.0.1:5000/", {raw_data:data}, function(flask_data) {
+                flask_data = flask_data.replace(/'/g, '"')
+                data = JSON.parse(flask_data);
+                console.log(data)
                 $("#data_table").html(flask_data)
             });
         });

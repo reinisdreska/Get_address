@@ -18,6 +18,8 @@ def index():
         for i in raw_data_array:
             latlon = i.split(", ")
             geo_data = geolocator.reverse(i)
+            print(i)
+            print(geo_data.raw)
             address_info = geo_data.address.split(",")
             location_info = {
                 "valsts":address_info[6],
@@ -32,6 +34,5 @@ def index():
                 "lon": latlon[1]
             }
             location_data.append(location_info)
-        print(location_data)
         location_data_string = str(location_data)
         return location_data_string
