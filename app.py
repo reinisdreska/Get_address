@@ -19,6 +19,7 @@ def index():
             url = "https://"+ config.url +"/v3/"+ config.api +"/reverse_geocoding?lat="+ latlon[0] +"&lon="+ latlon[1]
             responce = requests.get(url)
             location_info = responce.json()
+            location_info.update({"starting_lat":latlon[0], "starting_lon":latlon[1]})
             location_data.append(location_info)
         location_data_string = str(location_data)
         return location_data_string
