@@ -22,3 +22,12 @@ table, th, td {
     margin-left: auto;
     margin-right: auto;
 }
+
+.left {
+    float: left;
+    margin-left: 22%;
+}
+
+.left .file_upload {
+    margin-left: 15%;
+}

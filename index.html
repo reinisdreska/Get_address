@@ -3,42 +3,73 @@
 <head>
     <title>Index</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.1/papaparse.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="center">
         <textarea id="input" placeholder="Input coordinates"></textarea><br>
+        <div class="left">
+            <input class="file_upload" type="file" name="table_file" id="table_file" accept=".csv"><br>
+            <input type="text" id="lat" placeholder="Input lat key"><br>
+            <input type="text" id="lon" placeholder="Input lon key"><br>
+        </div>
+        
         <button id="button">Parse</button><br><br><br>
         <table id="data_table"></table>
         <button id="download_csv">Download CSV</button>
     </div>
     <script>
         $("button").click(function(){
-            var data = $("#input").val();
-            $.post("http://127.0.0.1:5000/", {raw_data:data}, function(flask_data) {
-                flask_data = flask_data.replace(/'/g, '"')
-                data = JSON.parse(flask_data);
-                let headers = Object.keys(data[0])
-                data_table_string = "<tr> "
-                for (let i=0; i<headers.length; i++){
-                    data_table_string = data_table_string + "<th>" +headers[i]+ "</th>"
-                }
-                data_table_string = data_table_string + " </tr> "
-                for (let dl=0; dl<data.length; dl++){
-                    data_set = data[dl]
-                    data_set_headers = Object.keys(data_set)
-                    data_set_length = data_set_headers.length
-                    data_table_string = data_table_string + " <tr> "
-                    
-                    for (let dsl=0; dsl<data_set_length; dsl++){
-                        data_table_string = data_table_string + "<td>"+ data_set[data_set_headers[dsl]] +"</td>"
+            if ($("#input").val().length != 0){
+                var data = $("#input").val();
+                post_data(data)
+            }
+
+            else {
+                const file_raw = Papa.parse(document.getElementById("table_file").files[0],
+                {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results){
+                        file_table = results.data
+                        var lat = $("#lat").val()
+                        var lon = $("#lon").val()
+                        data = String(file_table[0].lat)+ ", " +String(file_table[0].lon)
+                        for (let ft=1; ft<file_table.length; ft++){
+                            data = data+ "\n" + String(file_table[ft].lat)+ ", " +String(file_table[ft].lon)
+                        }
+                        post_data(data)
                     }
-                    
-                    data_table_string = data_table_string + " </tr>"
-                }
-                get_csv(data, headers)
-                $("#data_table").html(data_table_string)
-            });
+                })
+            }
+            
+            function post_data(data){
+                $.post("http://127.0.0.1:5000/", {raw_data:data}, function(flask_data) {
+                    flask_data = flask_data.replace(/'/g, '"')
+                    data = JSON.parse(flask_data);
+                    let headers = Object.keys(data[0])
+                    data_table_string = "<tr> "
+                    for (let i=0; i<headers.length; i++){
+                        data_table_string = data_table_string + "<th>" +headers[i]+ "</th>"
+                    }
+                    data_table_string = data_table_string + " </tr> "
+                    for (let dl=0; dl<data.length; dl++){
+                        data_set = data[dl]
+                        data_set_headers = Object.keys(data_set)
+                        data_set_length = data_set_headers.length
+                        data_table_string = data_table_string + " <tr> "
+                        
+                        for (let dsl=0; dsl<data_set_length; dsl++){
+                            data_table_string = data_table_string + "<td>"+ data_set[data_set_headers[dsl]] +"</td>"
+                        }
+                        
+                        data_table_string = data_table_string + " </tr>"
+                    }
+                    get_csv(data, headers)
+                    $("#data_table").html(data_table_string)
+                });
+            }
         });
 
         function get_csv(data, headers) {
