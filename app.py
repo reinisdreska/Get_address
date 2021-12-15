@@ -20,6 +20,10 @@ def index():
             responce = requests.get(url)
             location_info = responce.json()
             location_info.update({"starting_lat":latlon[0], "starting_lon":latlon[1]})
+            heder_list = list(location_info.keys())
+            for i in range(len(heder_list)):
+                location_info["REVGEO_" + heder_list[i]] = location_info.pop(heder_list[i])
+            print(location_info)
             location_data.append(location_info)
         location_data_string = str(location_data)
         return location_data_string
