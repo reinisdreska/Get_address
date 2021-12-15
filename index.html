@@ -10,6 +10,7 @@
         <textarea id="input" placeholder="Input coordinates"></textarea><br>
         <button id="button">Parse</button><br><br><br>
         <table id="data_table"></table>
+        <button id="download_csv">Download CSV</button>
     </div>
     <script>
         $("button").click(function(){
@@ -35,10 +36,46 @@
                     
                     data_table_string = data_table_string + " </tr>"
                 }
-                console.log(data_table_string)
+                get_csv(data, headers)
                 $("#data_table").html(data_table_string)
             });
         });
+
+        function get_csv(data, headers) {
+            const csv_rows = []
+            csv_rows.push(headers.join(","));
+
+            for (const row of data){
+                const values = headers.map(header => {
+                    if (header in row === true){
+                        const escaped = (""+row[header]).replace(/"/g, '\\"')
+                        return `"${row[header]}"`
+                    }
+                    else {
+                        const empty = " "
+                        return `"${empty}"`
+                    }
+                })
+                csv_rows.push(values.join(","))
+            }
+
+            const csv_data = csv_rows.join("\n")
+            download_csv(csv_data)
+        }
+
+        function download_csv(data){
+            const blob = new Blob([data], { type: "text/csv"});
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.setAttribute("hidden", "");
+            a.setAttribute("href", url);
+            a.setAttribute("download", "Vietas_dati.csv");
+            document.body.appendChild(a);
+            $("#download_csv").on("click", function(){
+                a.click();
+            })
+            document.body.removeChild(a);
+        }
     </script>
 </body>
 </html>
