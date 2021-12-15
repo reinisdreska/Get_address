@@ -9,7 +9,7 @@
     <div class="center">
         <textarea id="input" placeholder="Input coordinates"></textarea><br>
         <button id="button">Parse</button><br><br><br>
-        <div id="data_table"></div>
+        <table id="data_table"></table>
     </div>
     <script>
         $("button").click(function(){
@@ -17,7 +17,26 @@
             $.post("http://127.0.0.1:5000/", {raw_data:data}, function(flask_data) {
                 flask_data = flask_data.replace(/'/g, '"')
                 data = JSON.parse(flask_data);
-                $("#data_table").html(flask_data)
+                let headers = Object.keys(data[0])
+                data_table_string = "<tr> "
+                for (let i=0; i<headers.length; i++){
+                    data_table_string = data_table_string + "<th>" +headers[i]+ "</th>"
+                }
+                data_table_string = data_table_string + " </tr> "
+                for (let dl=0; dl<data.length; dl++){
+                    data_set = data[dl]
+                    data_set_headers = Object.keys(data_set)
+                    data_set_length = data_set_headers.length
+                    data_table_string = data_table_string + " <tr> "
+                    
+                    for (let dsl=0; dsl<data_set_length; dsl++){
+                        data_table_string = data_table_string + "<td>"+ data_set[data_set_headers[dsl]] +"</td>"
+                    }
+                    
+                    data_table_string = data_table_string + " </tr>"
+                }
+                console.log(data_table_string)
+                $("#data_table").html(data_table_string)
             });
         });
     </script>
