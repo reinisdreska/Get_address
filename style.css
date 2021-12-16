@@ -14,7 +14,7 @@ textarea {
     height: 40px;
 }
 
-table, th, td {
+th, td {
     border:1px solid black;
 }
 
@@ -30,4 +30,9 @@ table, th, td {
 
 .left .file_upload {
     margin-left: 15%;
+}
+
+#preview_table {
+    margin-left: auto;
+    margin-right: auto;
 }

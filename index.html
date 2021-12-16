@@ -11,12 +11,13 @@
         <textarea id="input" placeholder="Input coordinates"></textarea><br>
         <div class="left">
             <input class="file_upload" type="file" name="table_file" id="table_file" accept=".csv"><br>
-            <select name="lat" id="lat"><option value=""> Choose lat key</option></select>
-            <select name="lon" id="lon"><option value=""> Choose lon key</option></select>
+            <p>Choose lat key<select name="lat" id="lat"><option value=""> Choose lat key</option></select></p>
+            <p>Choose lon key<select name="lon" id="lon"><option value=""> Choose lon key</option></select></p>
         </div>
         
         <button id="button">Parse</button>
-        <button id="create">Create table</button><br><br><br>
+        <button id="create">Create table</button><br><br><br><br><br><br><br>
+        <table id="preview_table"></table>
         <table id="data_table"></table>
         <button id="download_csv">Download CSV</button>
     </div>
@@ -37,6 +38,26 @@
                     complete: function(results){
                         file_table = results.data
                         let keys = Object.keys(file_table[0])
+
+                        preview_table_string = "<tr> "
+                        for (let pth=0; pth<5; pth++){
+                            preview_table_string = preview_table_string + "<th>" +keys[pth]+ "</th>"
+                        }
+                        preview_table_string = preview_table_string + " </tr> "
+                        for (let ptd=0; ptd<file_table.length; ptd++){
+                            preview_set = file_table[ptd]
+                            preview_set_headers = Object.keys(preview_set)
+                            preview_set_length = preview_set_headers.length
+                            preview_table_string = preview_table_string + " <tr> "
+                            
+                            for (let ptdd=0; ptdd<5; ptdd++){
+                                preview_table_string = preview_table_string + "<td>"+ preview_set[preview_set_headers[ptdd]] +"</td>"
+                            }
+                            
+                            preview_table_string = preview_table_string + " </tr>"
+                        }
+
+                        $("#preview_table").html(preview_table_string)
 
                         var lat_key = document.getElementById("lat")
                         lat_key.innerHTML = ""
@@ -114,6 +135,7 @@
                             data_table_string = data_table_string + " </tr>"
                         }
                         get_csv(data, headers)
+                        $("#preview_table").html("")
                         $("#data_table").html(data_table_string)
                     }
                 });
