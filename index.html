@@ -11,11 +11,12 @@
         <textarea id="input" placeholder="Input coordinates"></textarea><br>
         <div class="left">
             <input class="file_upload" type="file" name="table_file" id="table_file" accept=".csv"><br>
-            <input type="text" id="lat" placeholder="Input lat key"><br>
-            <input type="text" id="lon" placeholder="Input lon key"><br>
+            <select name="lat" id="lat"><option value=""> Choose lat key</option></select>
+            <select name="lon" id="lon"><option value=""> Choose lon key</option></select>
         </div>
         
-        <button id="button">Parse</button><br><br><br>
+        <button id="button">Parse</button>
+        <button id="create">Create table</button><br><br><br>
         <table id="data_table"></table>
         <button id="download_csv">Download CSV</button>
     </div>
@@ -23,7 +24,9 @@
         $("button").click(function(){
             if ($("#input").val().length != 0){
                 var data = $("#input").val();
-                post_data(data)
+                $("create").click(function(){
+                    post_data(data)
+                })
             }
 
             else {
@@ -33,13 +36,43 @@
                     skipEmptyLines: true,
                     complete: function(results){
                         file_table = results.data
-                        var lat = $("#lat").val()
-                        var lon = $("#lon").val()
-                        data = String(file_table[0].lat)+ ", " +String(file_table[0].lon)
-                        for (let ft=1; ft<file_table.length; ft++){
-                            data = data+ "\n" + String(file_table[ft].lat)+ ", " +String(file_table[ft].lon)
+                        let keys = Object.keys(file_table[0])
+
+                        var lat_key = document.getElementById("lat")
+                        lat_key.innerHTML = ""
+                        var lon_key = document.getElementById("lon")
+                        lon_key.innerHTML = ""
+
+                        var option_array = []
+                        for (let dk=0; dk<keys.length; dk++){
+                            option_array.push(keys[dk]+ "|" +keys[dk])
                         }
-                        post_data(data, file_table)
+
+                        for (var option in option_array) {
+                            var pair = option_array[option].split("|")
+                            var new_option = document.createElement("option")
+                            new_option.value = pair[0]
+                            new_option.innerHTML = pair[1]
+                            lat_key.options.add(new_option)
+                        }
+
+                        for (var option in option_array) {
+                            var pair = option_array[option].split("|")
+                            var new_option = document.createElement("option")
+                            new_option.value = pair[0]
+                            new_option.innerHTML = pair[1]
+                            lon_key.options.add(new_option)
+                        }
+
+                        $("#create").click(function(){
+                            var lat = lat_key.value
+                            var lon = lon_key.value
+                            data = String(file_table[0].lat)+ ", " +String(file_table[0].lon)
+                            for (let ft=1; ft<file_table.length; ft++){
+                                data = data+ "\n" + String(file_table[ft].lat)+ ", " +String(file_table[ft].lon)
+                            }
+                            post_data(data, file_table)
+                        })
                     }
                 })
             }
