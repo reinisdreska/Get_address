@@ -23,7 +23,6 @@ def index():
             heder_list = list(location_info.keys())
             for i in range(len(heder_list)):
                 location_info["REVGEO_" + heder_list[i]] = location_info.pop(heder_list[i])
-            print(location_info)
             location_data.append(location_info)
         location_data_string = str(location_data)
         return location_data_string

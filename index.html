@@ -39,35 +39,50 @@
                         for (let ft=1; ft<file_table.length; ft++){
                             data = data+ "\n" + String(file_table[ft].lat)+ ", " +String(file_table[ft].lon)
                         }
-                        post_data(data)
+                        post_data(data, file_table)
                     }
                 })
             }
             
-            function post_data(data){
+            function post_data(data, file_table){
                 $.post("http://127.0.0.1:5000/", {raw_data:data}, function(flask_data) {
                     flask_data = flask_data.replace(/'/g, '"')
-                    data = JSON.parse(flask_data);
-                    let headers = Object.keys(data[0])
-                    data_table_string = "<tr> "
-                    for (let i=0; i<headers.length; i++){
-                        data_table_string = data_table_string + "<th>" +headers[i]+ "</th>"
+                    json_data = JSON.parse(flask_data)
+
+                    if (file_table != undefined){
+                        let data = file_table.map(file_table_code => {
+                            let data2 = json_data.find(json_data_code => file_table_code)
+                            return { ...file_table_code, ...data2 }
+                        })
+                        create_table(data)
                     }
-                    data_table_string = data_table_string + " </tr> "
-                    for (let dl=0; dl<data.length; dl++){
-                        data_set = data[dl]
-                        data_set_headers = Object.keys(data_set)
-                        data_set_length = data_set_headers.length
-                        data_table_string = data_table_string + " <tr> "
-                        
-                        for (let dsl=0; dsl<data_set_length; dsl++){
-                            data_table_string = data_table_string + "<td>"+ data_set[data_set_headers[dsl]] +"</td>"
+
+                    else {
+                        create_table(json_data)
+                    }
+                    
+                    function create_table(data){
+                        let headers = Object.keys(data[0])
+                        data_table_string = "<tr> "
+                        for (let i=0; i<headers.length; i++){
+                            data_table_string = data_table_string + "<th>" +headers[i]+ "</th>"
                         }
-                        
-                        data_table_string = data_table_string + " </tr>"
+                        data_table_string = data_table_string + " </tr> "
+                        for (let dl=0; dl<data.length; dl++){
+                            data_set = data[dl]
+                            data_set_headers = Object.keys(data_set)
+                            data_set_length = data_set_headers.length
+                            data_table_string = data_table_string + " <tr> "
+                            
+                            for (let dsl=0; dsl<data_set_length; dsl++){
+                                data_table_string = data_table_string + "<td>"+ data_set[data_set_headers[dsl]] +"</td>"
+                            }
+                            
+                            data_table_string = data_table_string + " </tr>"
+                        }
+                        get_csv(data, headers)
+                        $("#data_table").html(data_table_string)
                     }
-                    get_csv(data, headers)
-                    $("#data_table").html(data_table_string)
                 });
             }
         });
