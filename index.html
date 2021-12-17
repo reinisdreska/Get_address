@@ -14,7 +14,23 @@
             <p>Choose lat key<select name="lat" id="lat"><option value=""> Choose lat key</option></select></p>
             <p>Choose lon key<select name="lon" id="lon"><option value=""> Choose lon key</option></select></p>
         </div>
-        
+        <label><input type="checkbox" checked="checked" value="REVGEO_valsts">valsts</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_admin_vien">admin_vien</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_terit_vien">terit_vien</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_apdz_vieta">apdz_vieta</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_iela">iela</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_maja">maja</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_index">index</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_korpuss">korpuss</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_vzd_id">vzd_id</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_distance">distance</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_x">x</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_y">y</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_adrese">adrese</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_lat">lat</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_lon">lon</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_starting_lat">starting_lat</label>
+        <label><input type="checkbox" checked="checked" value="REVGEO_starting_lon">starting_lon</label>
         <button id="button">Parse</button>
         <button id="create">Create table</button><br><br><br><br><br><br><br>
         <table id="preview_table"></table>
@@ -22,11 +38,17 @@
         <button id="download_csv">Download CSV</button>
     </div>
     <script>
-        $("button").click(function(){
+        $("#button").click(function(){
+            let checkbox_list = document.querySelectorAll('input[type="checkbox"]:checked')
+            let checkbox_array = []
+            for (let ch=0; ch<checkbox_list.length; ch++){
+                checkbox_array.push(checkbox_list[ch].value)
+            }
+
             if ($("#input").val().length != 0){
                 var data = $("#input").val();
-                $("create").click(function(){
-                    post_data(data)
+                $("#create").click(function(){
+                    post_data(data, checkbox_array)
                 })
             }
 
@@ -92,16 +114,26 @@
                             for (let ft=1; ft<file_table.length; ft++){
                                 data = data+ "\n" + String(file_table[ft].lat)+ ", " +String(file_table[ft].lon)
                             }
-                            post_data(data, file_table)
+                            post_data(data, checkbox_array, file_table)
                         })
                     }
                 })
             }
             
-            function post_data(data, file_table){
+            function post_data(data, checkbox_array, file_table){
                 $.post("http://127.0.0.1:5000/", {raw_data:data}, function(flask_data) {
                     flask_data = flask_data.replace(/'/g, '"')
-                    json_data = JSON.parse(flask_data)
+                    raw_json_data = JSON.parse(flask_data)
+                    json_data = []
+                    for (let arjd=0; arjd<raw_json_data.length; arjd++){
+                        raw_json_data_inside = raw_json_data[arjd]
+                        var checkbox_dict = {}
+                        for (let rjd=0; rjd<checkbox_array.length; rjd++){
+                            checkbox_array_inside = checkbox_array[rjd]
+                            checkbox_dict[checkbox_array_inside] = raw_json_data_inside[checkbox_array_inside];
+                        }
+                        json_data.push(checkbox_dict)
+                    }
 
                     if (file_table != undefined){
                         let data = file_table.map(file_table_code => {
@@ -122,8 +154,8 @@
                             data_table_string = data_table_string + "<th>" +headers[i]+ "</th>"
                         }
                         data_table_string = data_table_string + " </tr> "
-                        for (let dl=0; dl<data.length; dl++){
-                            data_set = data[dl]
+                        for (let dtl=0; dtl<data.length; dtl++){
+                            data_set = data[dtl]
                             data_set_headers = Object.keys(data_set)
                             data_set_length = data_set_headers.length
                             data_table_string = data_table_string + " <tr> "
