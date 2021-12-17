@@ -136,10 +136,11 @@
                     }
 
                     if (file_table != undefined){
-                        let data = file_table.map(file_table_code => {
-                            let data2 = json_data.find(json_data_code => file_table_code)
-                            return { ...file_table_code, ...data2 }
-                        })
+                        let data =[]
+                        for (let d=0; d<file_table.length; d++){
+                            let data_dict = {...file_table[d], ...json_data[d]}
+                            data.push(data_dict)
+                        }
                         create_table(data)
                     }
 
