@@ -1,0 +1,68 @@
+body {
+    background-color: rgb(60, 60, 60);
+    color: rgb(160, 160, 160);
+}
+
+.center {
+    margin-top: 5px;
+    text-align: center;
+    width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.center textarea {
+    resize: none;
+    width: 40%;
+    height: 300px;
+    float: left;
+}
+
+.center input {
+    float: left;
+}
+
+.center #key_input {
+    display: block;
+    float: left;
+}
+
+.center #buttons {
+    float: right;
+    position: absolute; top: 5px; right: 15%;
+}
+
+.center #parse{
+    margin-bottom: 2px;
+}
+
+.center #create{
+    margin-bottom: 2px;
+}
+
+.custom {
+    width: 250px !important;
+    background-color: rgb(31, 31, 31);
+    color: rgb(160, 160, 160);
+}
+
+.center #checkboxes {
+    margin-top: 90px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.center #checkbox {
+    margin: 2px;
+}
+
+#preview_table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#data_table {
+    margin-left: auto;
+    margin-right: auto;
+}

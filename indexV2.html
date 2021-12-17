@@ -1,52 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Index</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.1/papaparse.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <title>Index V2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.1/papaparse.min.js" integrity="sha512-EbdJQSugx0nVWrtyK3JdQQ/03mS3Q1UiAhRtErbwl1YL/+e2hZdlIcSURxxh7WXHTzn83sjlh2rysACoJGfb6g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="styleV2.css">
 </head>
 <body>
     <div class="center">
-        <textarea id="input" placeholder="Input coordinates"></textarea><br>
-        <div class="left">
-            <input class="file_upload" type="file" name="table_file" id="table_file" accept=".csv"><br>
-            <p>Choose lat key<select name="lat" id="lat"><option value=""> Choose lat key</option></select></p>
-            <p>Choose lon key<select name="lon" id="lon"><option value=""> Choose lon key</option></select></p>
+        <textarea id="latlon_text" placeholder="Input coordinates"></textarea>
+        <input type="file" id="table_file" accept=".csv"><br><br>
+        <div id="key_input">
+            <p>Choose lat key<select id="lat"><option value=""> Choose lat key</option></select></p>
+            <p>Choose lon key<select id="lon"><option value=""> Choose lon key</option></select></p>    
         </div>
-        <label><input type="checkbox" checked="checked" value="REVGEO_valsts">valsts</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_admin_vien">admin_vien</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_terit_vien">terit_vien</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_apdz_vieta">apdz_vieta</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_iela">iela</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_maja">maja</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_index">index</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_korpuss">korpuss</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_vzd_id">vzd_id</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_distance">distance</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_x">x</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_y">y</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_adrese">adrese</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_lat">lat</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_lon">lon</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_starting_lat">starting_lat</label>
-        <label><input type="checkbox" checked="checked" value="REVGEO_starting_lon">starting_lon</label>
-        <button id="button">Parse</button>
-        <button id="create">Create table</button><br><br><br><br><br><br><br>
-        <table id="preview_table"></table>
-        <table id="data_table"></table>
-        <button id="download_csv">Download CSV</button>
+        <div class="d-grid gap-2" id="buttons">
+            <button class="btn btn-primary btn-outline-dark custom" id="parse">Parse</button><br>
+            <button class="btn btn-primary btn-outline-dark custom" id="create">Create</button><br>
+            <button class="btn btn-primary btn-outline-dark custom" id="download_csv">Download CSV</button>
+        </div>
+        <div class="form-check form-check-inline" id="checkboxes"></div>
     </div>
+    <table class="table table-dark" id="preview_table"></table>
+    <table class="table table-dark table-responsive" id="data_table"></table>
+
     <script>
-        $("#button").click(function(){
+        let checkbox_values = ["REVGEO_valsts","REVGEO_admin_vien","REVGEO_terit_vien","REVGEO_apdz_vieta","REVGEO_iela","REVGEO_maja","REVGEO_index","REVGEO_korpuss","REVGEO_vzd_id","REVGEO_distance","REVGEO_x","REVGEO_y","REVGEO_adrese","REVGEO_lat","REVGEO_lon","REVGEO_starting_lat","REVGEO_starting_lon"]
+        checkbox_string = ""
+        for (let cvl=0; cvl<checkbox_values.length; cvl++){
+            checkbox_string = checkbox_string + '<input id="checkbox" class="form-check-input" type="checkbox" checked="checked" value='+ checkbox_values[cvl] +'> <label class="form-check-label">'+ checkbox_values[cvl] +'</label>'
+        }
+        $("#checkboxes").html(checkbox_string)
+
+        $("#parse").click(function(){
             let checkbox_list = document.querySelectorAll('input[type="checkbox"]:checked')
             let checkbox_array = []
             for (let ch=0; ch<checkbox_list.length; ch++){
                 checkbox_array.push(checkbox_list[ch].value)
             }
 
-            if ($("#input").val().length != 0){
-                var data = $("#input").val();
+            if ($("#latlon_text").val().length != 0){
+                var data = $("#latlon_text").val();
                 $("#create").click(function(){
                     post_data(data, checkbox_array)
                 })
